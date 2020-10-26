@@ -1,0 +1,145 @@
+"""
+Name:   Josiah Plett
+Date:   Oct 20
+Desc:   A Halloween doodle involving movement. Let's see what happens!
+"""
+
+import turtle
+import time
+
+t = turtle.Turtle()  # making it 't' so I have to type less.
+size = 150  # so I can adjust it
+
+turtle.tracer(30)
+t.up()
+t.speed(0)
+t.hideturtle()
+t.color("Black")
+t.goto(size * -2, size * 0.6)
+t.width(1)
+t.begin_fill()
+t.down()
+t.fd(size * 4)
+t.right(165)
+t.circle(size * 1.9, 7)
+t.circle(size * 1.4, 8)
+t.circle(size * 0.7, 37)
+t.circle(size * 0.5, 42)
+t.right(112)
+t.circle(size * 5.5, 4)
+t.circle(size * 2, 7)
+t.circle(size * 1.4, 8)
+t.circle(size * 0.8, 20)
+t.circle(size * 0.6, 40)
+spot = t.position()
+t.goto(spot[0] * -1, spot[1])
+t.right(152)
+t.circle(size * 0.6, 40)
+t.circle(size * 0.8, 20)
+t.circle(size * 1.4, 8)
+t.circle(size * 2, 7)
+t.circle(size * 5.5, 4)
+t.right(112)
+t.circle(size * 0.5, 42)
+t.circle(size * 0.7, 37)
+t.circle(size * 1.4, 8)
+t.circle(size * 1.9, 7)
+t.end_fill()
+t.up()
+t.goto(size * -0.7, size * 0.6)
+t.color("White")
+t.begin_fill()
+t.seth(0)
+t.down()
+t.circle(-size / 32, 77)
+t.circle(size * 0.6, 14)
+t.circle(size * 0.4, 15)
+t.circle(size * 0.15, 20)
+t.circle(size * 0.45, 15)
+t.circle(size * 1.05, 7)
+t.circle(size * 0.2, 20)
+t.circle(size * 0.07, 50)
+t.circle(size * 0.45, 21)
+t.fd(size / 8)
+t.right(160)
+t.fd(size / 5)
+spot = t.position()
+t.goto(spot[0] * -1, spot[1])
+t.left(150)
+t.fd(size / 5)
+t.right(160)
+t.fd(size / 8)
+t.circle(size * 0.45, 21)
+t.circle(size * 0.07, 50)
+t.circle(size * 0.2, 20)
+t.circle(size * 1.05, 7)
+t.circle(size * 0.45, 15)
+t.circle(size * 0.15, 20)
+t.circle(size * 0.4, 15)
+t.circle(size * 0.6, 14)
+t.circle(-size / 32, 77)
+t.end_fill()
+
+
+def boi(coor, frame):
+    t.up()
+    t.goto(coor[0] - size / 25, coor[1])
+    t.width(size * 0.29)
+    t.color("White")
+    t.down()
+    t.seth(0)
+    t.fd(size / 8)
+    t.up()
+    t.color("Black")
+    t.width(1)
+    t.goto(coor[0], coor[1])
+    t.down()
+    headings = [-80, -60, -40, -105]
+    if frame % 4 == 1:
+        headings = [-55, -85, 0, -150]
+    elif frame % 4 == 2:
+        headings = [-25, -105, -35, -115]
+    elif frame % 4 == 3:
+        headings = [-40, -95, -70, -70]
+    t.seth(headings[0])
+    t.fd(size / 14)
+    t.rt(30)
+    t.fd(size / 12)
+    t.up()
+    t.goto(coor[0], coor[1])
+    t.down()
+    t.seth(headings[1])
+    t.fd(size / 14)
+    t.rt(30)
+    t.fd(size / 12)
+    t.up()
+    t.goto(coor[0], coor[1])
+    t.down()
+    t.seth(headings[2])
+    t.fd(size / 18)
+    t.lt(55)
+    t.fd(size / 16)
+    t.up()
+    t.goto(coor[0], coor[1])
+    t.down()
+    t.seth(headings[3])
+    t.fd(size / 18)
+    t.lt(55)
+    t.fd(size / 16)
+    t.up()
+    t.goto(coor[0], coor[1])
+    t.down()
+    t.seth(0)
+    t.circle(size / 20)
+    t.up()
+    for i in range(0, 10):
+        t.fd(1)
+
+
+t.speed(0)
+for i in range(0, 100):
+    boi([-size * 2 + size * i / 25, size * 0.75], i)
+    time.sleep(0.1)
+
+
+turtle.mainloop()
