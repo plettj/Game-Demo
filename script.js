@@ -21,19 +21,53 @@ var gold = new Image();
 gold.src = "images/Gold.png";
 
 //ctx.drawImage(img, sx, sy, swidth, sheight, x, y, width, height)
+/*
+var avatar = {
+    img: new Image(),
+    coor: [0, 0],
+    speed: 24,
+    action: 0,
+    move: function () {
+        // use this.action and this.coor to move
+    },
+    keyPress: function (event) {
+
+    }
+}*/
+
+
+
+
+
+
+
 
 var avatar = {
     img: new Image(),
-    action: 0, // 0-vibe 1-left 2-up 3-right 4-down
+    action: 0, // 0-rest 1-left 2-up 3-right 4-down
     dir: 1, // 1-right 0-left
     keys: [0, 0, 0, 0], // [left up right down]
-    coor: [1, 11],
+    coor: [5, 5],
     speed: 24, // frames per unit
     init: function () {
         this.img.src = "images/CavemanTileset.png";
     },
     move: function (value) {
         // make him move based on this.action and this.dir
+        /*
+        if (this.keys[0] == this.keys[1] == this.keys[2] == this.keys[3]) {
+            this.action = 0;
+        } else {
+            for (var i = 0; i < 4; i++) {
+                if (this.keys[i]) this.action = i + 1;
+            }
+        }
+        if (this.action == 1 || this.action == 3) {
+            this.coor[0] += (this.action - 2) / this.speed;
+        } else if (this.action == 2 || this.action == 4) {
+            this.coor[1] += (this.action - 3) / this.speed;
+        }
+        */
         if (this.keys[0] && this.keys[2]) this.action = 0;
         else if (this.keys[0]) {
             this.dir = 0;
@@ -56,7 +90,7 @@ var avatar = {
     },
     keyPress: function (num, value) {
         if (num >= 0 && num < 4) this.keys[num] = value;
-        if (num == -5) this.keys[1] = value;
+        //if (num == -5) this.keys[1] = value; // space button for up
     }
 }
 document.addEventListener("keydown", function (event) {
