@@ -1,19 +1,19 @@
 html, body {
     --unit: 24px;
     --pixel: 2px;
-    font-size: var(--pixel);
+    background-color: black;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 canvas {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: calc(50% - var(--unit) * 4.5);
+    left: calc(50% - var(--unit) * 10);
     background-color: #28E072;
 }
 
 #BackgroundCanvas {
     z-index: 0;
-    background-color: rgba(0, 0, 0, 0);
 }
 
 #MovementCanvas {
@@ -24,4 +24,13 @@ canvas {
 #Heading {
     position: absolute;
     z-index: 2;
+    top: calc(50% - var(--unit) * 3.5);
+    left: calc(50% - var(--unit) * 7);
+    width: calc(var(--unit) * 13);
+    height: calc(var(--unit) * 6);
+    color: white;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: calc(var(--unit) / 2);
+    border-radius: var(--unit);
+    font-size: calc(var(--pixel) * 2);
 }

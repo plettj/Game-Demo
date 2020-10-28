@@ -1,16 +1,12 @@
 // Javscript!
 
-var unit = Math.floor(window.innerWidth / 96) * 4;
+var unit = Math.floor(window.innerWidth / 120) * 6;
 document.body.style.setProperty("--unit", unit + "px");
 document.body.style.setProperty("--pixel", unit / 12 + "px");
 
 var B = document.getElementById("BackgroundCanvas");
-B.width = unit * 18;
-B.height = unit * 12;
 var bctx = B.getContext("2d");
 var M = document.getElementById("MovementCanvas");
-M.width = unit * 18;
-M.height = unit * 12;
 var mctx = M.getContext("2d");
 
 var frame = 0; // counts every frame
@@ -21,76 +17,72 @@ var gold = new Image();
 gold.src = "images/Gold.png";
 
 //ctx.drawImage(img, sx, sy, swidth, sheight, x, y, width, height)
-/*
-var avatar = {
-    img: new Image(),
-    coor: [0, 0],
-    speed: 24,
-    action: 0,
-    move: function () {
-        // use this.action and this.coor to move
-    },
-    keyPress: function (event) {
-
-    }
-}*/
-
-
-
-
-
-
-
 
 var avatar = {
     img: new Image(),
-    action: 0, // 0-rest 1-left 2-up 3-right 4-down
+    action: 0, // 0-vibe 1-left 2-up 3-right 4-down
     dir: 1, // 1-right 0-left
     keys: [0, 0, 0, 0], // [left up right down]
-    coor: [5, 5],
+    coor: [1, 11],
     speed: 24, // frames per unit
+    moving: false, // so he only can move if he's moved a whole unit
+    distance: 0, // how much of the unit he's moved
     init: function () {
         this.img.src = "images/CavemanTileset.png";
     },
-    move: function (value) {
-        // make him move based on this.action and this.dir
-        /*
-        if (this.keys[0] == this.keys[1] == this.keys[2] == this.keys[3]) {
-            this.action = 0;
-        } else {
-            for (var i = 0; i < 4; i++) {
-                if (this.keys[i]) this.action = i + 1;
+    draw: function () {
+        mctx.drawImage(this.img, 96 * (gameStep % 4), 96 * this.dir, 96, 96, unit * this.coor[0], unit * this.coor[1], unit, unit);
+    },
+    move: function () {
+        // below statement is for checking direction
+        if (!this.moving) {
+            if (this.keys.reduce((f, r) => f + r, 0) !== 1) {
+                this.action = 0; // if (not exactly 1 key is pressed)
+            } else if (this.keys[0]) {
+
+                // HERE WE WRAP THE BELOW CODE IN IF STATEMENTS THAT
+                // WON'T ALLOW THE AVATAR TO MOVE OFF SCREEN OR INTO BLOCKS.
+
+                this.dir = 0; // I need 'dir' because I only have two animations
+                this.action = 1;
+                this.moving = true;
+
+                // Do the same (physics logic) for the next 3 directions.
+
+            } else if (this.keys[2]) {
+                this.dir = 1;
+                this.action = 3;
+                this.moving = true;
+            } else if (this.keys[1]) {
+                this.action = 2;
+                this.moving = true;
+            } else if (this.keys[3]) {
+                this.action = 4;
+                this.moving = true;
             }
         }
-        if (this.action == 1 || this.action == 3) {
-            this.coor[0] += (this.action - 2) / this.speed;
-        } else if (this.action == 2 || this.action == 4) {
-            this.coor[1] += (this.action - 3) / this.speed;
-        }
-        */
-        if (this.keys[0] && this.keys[2]) this.action = 0;
-        else if (this.keys[0]) {
-            this.dir = 0;
-            this.action = 1;
-        } else if (this.keys[2]) {
-            this.dir = 1;
-            this.action = 3;
-        } else if (this.keys[1]) {
-            this.action = 2;
-        } else if (this.keys[3]) {
-            this.action = 4;
-        } else this.action = 0;
-        if (this.keys[1]) this.action = 2;
+        // below statements are to make the character actually move
         if (this.action == 1 || this.action == 3) {
             this.coor[0] += (this.dir * 2 - 1) / this.speed;
+            this.distance++;
         } else if (this.action == 2 || this.action == 4) {
             this.coor[1] += (this.action - 3) / this.speed;
+            this.distance++;
         }
-        mctx.drawImage(this.img, 96 * (value % 4), 96 * this.dir, 96, 96, unit * this.coor[0], unit * this.coor[1], unit, unit);
+        // below statement is for
+        if (this.distance == this.speed) {
+            this.moving = false;
+            // below code is to make sure he ends exactly on a unit.
+            // Not required unless you see problems with him being off-grid.
+            //this.coor[0] = Math.round(this.coor[0]);
+            //this.coor[1] = Math.round(this.coor[1]);
+            this.distance = 0;
+        }
+        this.draw();
     },
     keyPress: function (num, value) {
         if (num >= 0 && num < 4) this.keys[num] = value;
-        //if (num == -5) this.keys[1] = value; // space button for up
+        if (num == -5) this.keys[1] = value;
     }
 }
 document.addEventListener("keydown", function (event) {
@@ -103,18 +95,21 @@ document.addEventListener("keyup", function (event) {
 avatar.init();
 
 var map = {
+    width: 20,
+    height: 9,
     levels: [],
     currentLevel: 0,
     inPlay: false,
     draw: function () {
         var array = this.levels[this.currentLevel];
+        // loop through every value of the level
         for (var y = 0; y < array.length; y++) {
             for (var x = 0; x < array[0].length; x++) {
-                switch (array[y][x]) {
+                // do something for each different value
+                switch (array[y][x]) { // switch == fancy if statement XD
                     case 0:
                         break;
                     case 1:
-                        console.log(x, y);
                         bctx.drawImage(gold, 0, 0, 96, 96, unit * x, unit * y, unit, unit);
                         break;
                     case 2:
@@ -139,23 +134,21 @@ var map = {
 }
 
 map.addLevel([
-    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
-    [2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0],
-    [0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0],
-    [0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0],
-    [0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0],
-    [0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
-    [0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
 ]);
 
 function animate() {
     frame++;
-    mctx.clearRect(0, 0, unit * 18, unit * 12);
-    avatar.move(gameStep);
+    mctx.clearRect(0, 0, unit * map.width, unit * map.height);
+    avatar.move(); // decided not to pass 'gameStep' since it's global anyway.
     if (!(frame % speed)) {
         gameStep++;
     }
@@ -163,6 +156,10 @@ function animate() {
 }
 
 avatar.img.onload = function () {
+    B.width = unit * map.width;
+    B.height = unit * map.height;
+    M.width = unit * map.width;
+    M.height = unit * map.height;
     animate();
     map.startLevel(0);
 }
