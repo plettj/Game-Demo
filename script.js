@@ -36,6 +36,8 @@ var avatar = {
     move: function () {
         // below statement is for checking direction
         if (!this.moving) {
+            this.coor[0] = Math.round(this.coor[0]);
+            this.coor[1] = Math.round(this.coor[1]);
             if (this.keys.reduce((f, r) => f + r, 0) !== 1) {
                 this.action = 0; // if (not exactly 1 key is pressed)
             } else if (this.keys[0]) {
@@ -43,16 +45,24 @@ var avatar = {
                 // HERE WE WRAP THE BELOW CODE IN IF STATEMENTS THAT
                 // WON'T ALLOW THE AVATAR TO MOVE OFF SCREEN OR INTO BLOCKS.
 
-                this.dir = 0; // I need 'dir' because I only have two animations
-                this.action = 1;
-                this.moving = true;
+                if (this.coor[0] > 0) { // so it doesn't throw errors when we try to access -1 index
+                    if (map.levels[map.currentLevel][this.coor[1]][this.coor[0] - 1] == 0) {
+                        this.dir = 0; // I need 'dir' because I only have two animations
+                        this.action = 1;
+                        this.moving = true;
+                    }
+                }
 
                 // Do the same (physics logic) for the next 3 directions.
 
             } else if (this.keys[2]) {
-                this.dir = 1;
-                this.action = 3;
-                this.moving = true;
+                if (this.coor[0] < map.width - 1) { // so it doesn't throw errors when we try to access non-existent index
+                    if (map.levels[map.currentLevel][this.coor[1]][this.coor[0] + 1] == 0) {
+                        this.dir = 1;
+                        this.action = 3;
+                        this.moving = true;
+                    }
+                }
             } else if (this.keys[1]) {
                 this.action = 2;
                 this.moving = true;
@@ -74,8 +84,8 @@ var avatar = {
             this.moving = false;
             // below code is to make sure he ends exactly on a unit.
             // Not required unless you see problems with him being off-grid.
-            //this.coor[0] = Math.round(this.coor[0]);
-            //this.coor[1] = Math.round(this.coor[1]);
+            this.coor[0] = Math.round(this.coor[0]);
+            this.coor[1] = Math.round(this.coor[1]);
             this.distance = 0;
         }
         this.draw();

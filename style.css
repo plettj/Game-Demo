@@ -23,20 +23,17 @@ canvas {
 
 #Pause {
     position: absolute;
+    z-index: 3;
     width: calc(var(--unit) / 2);
-    height: calc(var(--pixel) * 3);
-    padding: calc(var(--pixel) * 1.5) 0;
-    font-size: calc(var(--pixel) * 3);
+    height: calc(var(--unit) / 2);
     top: calc(50% - var(--unit) * 4);
     right: calc(50% - var(--unit) * 9.5);
-    background-color: rgba(0, 0, 0, 0.3);
-    color: white;
-    z-index: 3;
-    text-align: center;
+    background-image: url(images/Gold.png);
+    background-size: calc(var(--unit) / 2) calc(var(--unit) / 2);
 }
 
 #Pause:hover {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 #Heading {
@@ -51,4 +48,5 @@ canvas {
     padding: calc(var(--unit) / 2);
     border-radius: var(--unit);
     font-size: calc(var(--pixel) * 2);
+    display: none;
 }
