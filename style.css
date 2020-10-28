@@ -21,6 +21,24 @@ canvas {
     background-color: rgba(0, 0, 0, 0);
 }
 
+#Pause {
+    position: absolute;
+    width: calc(var(--unit) / 2);
+    height: calc(var(--pixel) * 3);
+    padding: calc(var(--pixel) * 1.5) 0;
+    font-size: calc(var(--pixel) * 3);
+    top: calc(50% - var(--unit) * 4);
+    right: calc(50% - var(--unit) * 9.5);
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    z-index: 3;
+    text-align: center;
+}
+
+#Pause:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
 #Heading {
     position: absolute;
     z-index: 2;
