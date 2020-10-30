@@ -11,7 +11,7 @@ var mctx = M.getContext("2d");
 
 var frame = 0; // counts every frame
 var gameStep = 0; // counts every time we want to animate
-var speed = 12; // relates frame to gameStep; speed of animation loop.
+var speed = 10; // relates frame to gameStep; speed of animation loop.
 
 var gold = new Image();
 gold.src = "images/Gold.png";
@@ -24,7 +24,7 @@ var avatar = {
     dir: 1, // 1-right 0-left
     keys: [0, 0, 0, 0], // [left up right down]
     coor: [1, 11],
-    speed: 24, // frames per unit
+    speed: 16, // frames per unit
     moving: false, // so he only can move if he's moved a whole unit
     distance: 0, // how much of the unit he's moved
     init: function () {
@@ -41,34 +41,36 @@ var avatar = {
             if (this.keys.reduce((f, r) => f + r, 0) !== 1) {
                 this.action = 0; // if (not exactly 1 key is pressed)
             } else if (this.keys[0]) {
-
-                // HERE WE WRAP THE BELOW CODE IN IF STATEMENTS THAT
-                // WON'T ALLOW THE AVATAR TO MOVE OFF SCREEN OR INTO BLOCKS.
-
                 if (this.coor[0] > 0) { // so it doesn't throw errors when we try to access -1 index
-                    if (map.levels[map.currentLevel][this.coor[1]][this.coor[0] - 1] == 0) {
+                    if (map.levels[map.currentLevel][this.coor[1]][this.coor[0] - 1] !== 1) { // collision logic
                         this.dir = 0; // I need 'dir' because I only have two animations
                         this.action = 1;
                         this.moving = true;
                     }
                 }
-
                 // Do the same (physics logic) for the next 3 directions.
-
             } else if (this.keys[2]) {
-                if (this.coor[0] < map.width - 1) { // so it doesn't throw errors when we try to access non-existent index
-                    if (map.levels[map.currentLevel][this.coor[1]][this.coor[0] + 1] == 0) {
+                if (this.coor[0] < map.width - 1) {
+                    if (map.levels[map.currentLevel][this.coor[1]][this.coor[0] + 1] !== 1) {
                         this.dir = 1;
                         this.action = 3;
                         this.moving = true;
                     }
                 }
             } else if (this.keys[1]) {
-                this.action = 2;
-                this.moving = true;
+                if (this.coor[1] > 0) {
+                    if (map.levels[map.currentLevel][this.coor[1] - 1][this.coor[0]] !== 1) {
+                        this.action = 2;
+                        this.moving = true;
+                    }
+                }
             } else if (this.keys[3]) {
-                this.action = 4;
-                this.moving = true;
+                if (this.coor[1] < map.height - 1) {
+                    if (map.levels[map.currentLevel][this.coor[1] + 1][this.coor[0]] !== 1) {
+                        this.action = 4;
+                        this.moving = true;
+                    }
+                }
             }
         }
         // below statements are to make the character actually move
@@ -79,9 +81,10 @@ var avatar = {
             this.coor[1] += (this.action - 3) / this.speed;
             this.distance++;
         }
-        // below statement is for
+        // below statement is for always moving by one unit
         if (this.distance == this.speed) {
             this.moving = false;
+            this.action = 0; // need this otherwise bugs happen
             // below code is to make sure he ends exactly on a unit.
             // Not required unless you see problems with him being off-grid.
             this.coor[0] = Math.round(this.coor[0]);
@@ -144,15 +147,15 @@ var map = {
 }
 
 map.addLevel([
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
+    [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0],
+    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0],
+    [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0],
+    [2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+    [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
+    [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+    [1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0]
 ]);
 
 function animate() {
