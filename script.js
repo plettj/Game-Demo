@@ -81,6 +81,7 @@ var avatar = {
             this.coor[1] += (this.action - 3) / this.speed;
             this.distance++;
         }
+        this.draw();
         // below statement is for always moving by one unit
         if (this.distance == this.speed) {
             this.moving = false;
@@ -89,9 +90,14 @@ var avatar = {
             // Not required unless you see problems with him being off-grid.
             this.coor[0] = Math.round(this.coor[0]);
             this.coor[1] = Math.round(this.coor[1]);
+            if (map.currentLevel < map.levels.length - 1) {
+                if (map.levels[map.currentLevel][this.coor[1]][this.coor[0]] == 3) {
+                    map.endLevel();
+                    map.startLevel(map.currentLevel + 1);
+                }
+            }
             this.distance = 0;
         }
-        this.draw();
     },
     keyPress: function (num, value) {
         if (num >= 0 && num < 4) this.keys[num] = value;
@@ -101,6 +107,13 @@ var avatar = {
 document.addEventListener("keydown", function (event) {
     avatar.keyPress(event.keyCode - 37, 1);
     //alert(event.keyCode);
+    // 1 = 49 9 = 57;
+    if (event.keyCode > 48 && event.keyCode < 58) {
+        if (map.levels.length > event.keyCode - 49) {
+            map.endLevel();
+            map.startLevel(event.keyCode - 49);
+        }
+    }
 });
 document.addEventListener("keyup", function (event) {
     avatar.keyPress(event.keyCode - 37, 0);
@@ -112,7 +125,7 @@ var map = {
     height: 9,
     levels: [],
     currentLevel: 0,
-    inPlay: false,
+    pause: true,
     draw: function () {
         var array = this.levels[this.currentLevel];
         // loop through every value of the level
@@ -122,11 +135,14 @@ var map = {
                 switch (array[y][x]) { // switch == fancy if statement XD
                     case 0:
                         break;
-                    case 1:
+                    case 1: // block
                         bctx.drawImage(gold, 0, 0, 96, 96, unit * x, unit * y, unit, unit);
                         break;
-                    case 2:
+                    case 2: // avatar location
                         avatar.coor = [x, y];
+                        break;
+                    case 3: // goal
+                        // draw our goal image
                         break;
                 }
             }
@@ -136,13 +152,16 @@ var map = {
         this.levels.push(array);
     },
     endLevel: function () {
-        bctx.clearRect(0, 0, this.levels[this.currentLevel][0].length, this.levels[this.currentLevel].length);
-        this.inPlay = false;
+        bctx.clearRect(0, 0, this.width * unit, this.height * unit);
+        avatar.action = 0;
+        avatar.moving = false;
+        avatar.distance = 0;
+        this.pause = true;
     },
     startLevel: function (index) {
         this.currentLevel = index;
         this.draw();
-        this.inPlay = true;
+        this.pause = false;
     }
 }
 
@@ -151,19 +170,32 @@ map.addLevel([
     [1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0],
     [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0],
     [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0],
-    [2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+    [2, 0, 3, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
     [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
     [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
     [1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0],
     [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0]
 ]);
+map.addLevel([
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+]);
 
 function animate() {
-    frame++;
-    mctx.clearRect(0, 0, unit * map.width, unit * map.height);
-    avatar.move(); // decided not to pass 'gameStep' since it's global anyway.
-    if (!(frame % speed)) {
-        gameStep++;
+    if (!map.pause) {
+        frame++;
+        mctx.clearRect(0, 0, unit * map.width, unit * map.height);
+        avatar.move(); // decided not to pass 'gameStep' since it's global anyway.
+        if (!(frame % speed)) {
+            gameStep++;
+        }
     }
     requestAnimationFrame(animate);
 }
