@@ -50,3 +50,32 @@ canvas {
     font-size: calc(var(--pixel) * 2);
     display: none;
 }
+
+#LevelMenu {
+    position: absolute;
+    display: none;
+    z-index: 3;
+    width: calc(var(--unit) * 18);
+    height: calc(var(--unit) * 7);
+    top: calc(50% - var(--unit) * 3.5);
+    left: calc(50% - var(--unit) * 9);
+    border-radius: var(--unit);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+}
+
+#Levels { /*table*/
+    background-color: red;
+}
+
+tr {
+    background-color: blue;
+}
+
+td {
+    width: calc(var(--unit));
+    height: calc(var(--unit));
+    background-color: green;
+    color: white;
+}

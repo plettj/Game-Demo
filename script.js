@@ -100,20 +100,15 @@ var avatar = {
         }
     },
     keyPress: function (num, value) {
-        if (num >= 0 && num < 4) this.keys[num] = value;
-        if (num == -5) this.keys[1] = value;
+        if (!map.pause) {
+            if (num >= 0 && num < 4) this.keys[num] = value;
+            if (num == -5) this.keys[1] = value;
+        }
     }
 }
 document.addEventListener("keydown", function (event) {
     avatar.keyPress(event.keyCode - 37, 1);
     //alert(event.keyCode);
-    // 1 = 49 9 = 57;
-    if (event.keyCode > 48 && event.keyCode < 58) {
-        if (map.levels.length > event.keyCode - 49) {
-            map.endLevel();
-            map.startLevel(event.keyCode - 49);
-        }
-    }
 });
 document.addEventListener("keyup", function (event) {
     avatar.keyPress(event.keyCode - 37, 0);
@@ -170,11 +165,11 @@ map.addLevel([
     [1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0],
     [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0],
     [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0],
-    [2, 0, 3, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+    [2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
     [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
     [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
     [1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0],
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 3]
 ]);
 map.addLevel([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -184,9 +179,67 @@ map.addLevel([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]);
+map.addLevel([
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+]);
+
+var menus = {
+    levelMenu: document.getElementById("LevelMenu"),
+    levels: document.getElementById("Levels"),
+    pauseButton: document.getElementById("Pause"),
+    pause: function (level = -1) {
+        if (level == -1) { // pause
+            this.levelMenu.style.display = "block";
+            this.pauseButton.style.display = "none";
+            map.pause = true;
+        } else { // play
+            this.levelMenu.style.display = "none";
+            this.pauseButton.style.display = "block";
+            console.log(level);
+            if (level == map.currentLevel) {
+                map.pause = false;
+            } else {
+                map.endLevel();
+                map.startLevel(level);
+            }
+        }
+    }
+}
+document.addEventListener("click", function (event) {
+    if (map.pause) {
+        if (event.target !== menus.levelMenu && !menus.levelMenu.contains(event.target)) {
+            menus.pause(map.currentLevel);
+        } else if (event.target.nodeName == "TD") { // level button
+            menus.pause(parseInt(event.target.innerHTML) - 1);
+        }
+    } else {
+        if (event.target == menus.pauseButton) {
+            menus.pause();
+        }
+    }
+});
+
+function makeLevelButtons() {
+    var row = document.createElement("tr");
+    for (var l = 0; l < map.levels.length; l++) {
+        var button = document.createElement("td");
+        var number = document.createTextNode((l + 1));
+        button.appendChild(number);
+        row.appendChild(button);
+    }
+    menus.levels.appendChild(row);
+}
 
 function animate() {
     if (!map.pause) {
@@ -201,6 +254,7 @@ function animate() {
 }
 
 avatar.img.onload = function () {
+    makeLevelButtons();
     B.width = unit * map.width;
     B.height = unit * map.height;
     M.width = unit * map.width;
