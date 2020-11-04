@@ -5,11 +5,15 @@ html, body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+* {
+    transition-duration: 0.25s;
+}
+
 canvas {
     position: absolute;
     top: calc(50% - var(--unit) * 4.5);
     left: calc(50% - var(--unit) * 10);
-    background-color: #28E072;
+    background-color: rgb(40, 40, 40);
 }
 
 #BackgroundCanvas {
@@ -66,16 +70,22 @@ canvas {
 }
 
 #Levels { /*table*/
-    background-color: red;
+    border-collapse: separate;
+    border-spacing: calc(var(--unit));
+    font-size: calc(var(--unit) / 2);
 }
 
 tr {
-    background-color: blue;
 }
 
 td {
     width: calc(var(--unit));
     height: calc(var(--unit));
-    background-color: green;
+    background-color: rgba(0, 0, 0, 0.5);
+    margin: calc(var(--unit) / 2);
     color: white;
+}
+
+td:hover {
+    background-color: rgba(255, 255, 255, 0.2);
 }

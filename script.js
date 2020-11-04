@@ -11,27 +11,23 @@ var mctx = M.getContext("2d");
 
 var frame = 0; // counts every frame
 var gameStep = 0; // counts every time we want to animate
-var speed = 10; // relates frame to gameStep; speed of animation loop.
-
-var gold = new Image();
-gold.src = "images/Gold.png";
+var speed = 8; // relates frame to gameStep; speed of animation loop.
 
 //ctx.drawImage(img, sx, sy, swidth, sheight, x, y, width, height)
 
 var avatar = {
     img: new Image(),
     action: 0, // 0-vibe 1-left 2-up 3-right 4-down
-    dir: 1, // 1-right 0-left
     keys: [0, 0, 0, 0], // [left up right down]
     coor: [1, 11],
     speed: 16, // frames per unit
     moving: false, // so he only can move if he's moved a whole unit
     distance: 0, // how much of the unit he's moved
     init: function () {
-        this.img.src = "images/CavemanTileset.png";
+        this.img.src = "images/Dude Tileseeet.png";
     },
     draw: function () {
-        mctx.drawImage(this.img, 96 * (gameStep % 4), 96 * this.dir, 96, 96, unit * this.coor[0], unit * this.coor[1], unit, unit);
+        mctx.drawImage(this.img, 96 * (gameStep % 4), 96 * this.action, 96, 96, unit * this.coor[0], unit * this.coor[1], unit, unit);
     },
     move: function () {
         // below statement is for checking direction
@@ -43,7 +39,6 @@ var avatar = {
             } else if (this.keys[0]) {
                 if (this.coor[0] > 0) { // so it doesn't throw errors when we try to access -1 index
                     if (map.levels[map.currentLevel][this.coor[1]][this.coor[0] - 1] !== 1) { // collision logic
-                        this.dir = 0; // I need 'dir' because I only have two animations
                         this.action = 1;
                         this.moving = true;
                     }
@@ -52,7 +47,6 @@ var avatar = {
             } else if (this.keys[2]) {
                 if (this.coor[0] < map.width - 1) {
                     if (map.levels[map.currentLevel][this.coor[1]][this.coor[0] + 1] !== 1) {
-                        this.dir = 1;
                         this.action = 3;
                         this.moving = true;
                     }
@@ -75,7 +69,7 @@ var avatar = {
         }
         // below statements are to make the character actually move
         if (this.action == 1 || this.action == 3) {
-            this.coor[0] += (this.dir * 2 - 1) / this.speed;
+            this.coor[0] += (this.action - 2) / this.speed;
             this.distance++;
         } else if (this.action == 2 || this.action == 4) {
             this.coor[1] += (this.action - 3) / this.speed;
@@ -121,6 +115,10 @@ var map = {
     levels: [],
     currentLevel: 0,
     pause: true,
+    tiles: new Image(),
+    init: function () {
+        this.tiles.src = "images/Crap Tileset.png";
+    },
     draw: function () {
         var array = this.levels[this.currentLevel];
         // loop through every value of the level
@@ -131,13 +129,19 @@ var map = {
                     case 0:
                         break;
                     case 1: // block
-                        bctx.drawImage(gold, 0, 0, 96, 96, unit * x, unit * y, unit, unit);
+                        bctx.drawImage(this.tiles, 0, 0, 96, 96, unit * x, unit * y, unit, unit);
                         break;
                     case 2: // avatar location
                         avatar.coor = [x, y];
                         break;
                     case 3: // goal
-                        // draw our goal image
+                        bctx.drawImage(this.tiles, 96, 0, 96, 96, unit * x, unit * y, unit, unit);
+                        break;
+                    case 4: // left
+                    case 5: // up
+                    case 6: // right
+                    case 7: //down
+                        bctx.drawImage(this.tiles, 96 * (array[y][x] - 4), 96, 96, 96, unit * x, unit * y, unit, unit);
                         break;
                 }
             }
@@ -159,25 +163,25 @@ var map = {
         this.pause = false;
     }
 }
-
+map.init();
 map.addLevel([
-    [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [1, 6, 0, 7, 1, 0, 0, 0, 0, 4, 1, 6, 0, 7, 1, 6, 0, 0, 0, 7],
     [1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0],
-    [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0],
+    [1, 0, 1, 6, 0, 0, 0, 0, 0, 5, 1, 0, 1, 0, 1, 5, 0, 4, 1, 0],
     [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0],
-    [2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+    [2, 5, 0, 7, 1, 6, 0, 6, 0, 0, 0, 5, 1, 6, 0, 0, 0, 5, 1, 0],
     [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
-    [1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+    [1, 7, 0, 4, 1, 0, 1, 0, 1, 6, 0, 7, 0, 5, 1, 0, 0, 4, 1, 0],
     [1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0],
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 3]
+    [1, 6, 0, 0, 0, 5, 1, 6, 0, 5, 1, 6, 0, 0, 0, 0, 0, 5, 1, 3]
 ]);
 map.addLevel([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 0],
+    [0, 0, 0, 0, 4, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
+    [0, 0, 1, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 7, 0, 0, 0, 3, 1, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -253,7 +257,7 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-avatar.img.onload = function () {
+map.tiles.onload = function () {
     makeLevelButtons();
     B.width = unit * map.width;
     B.height = unit * map.height;
